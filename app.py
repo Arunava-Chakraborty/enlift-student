@@ -17,7 +17,74 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS for mobile responsiveness
+st.markdown("""
+<style>
+.main-header {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    padding: 3.5rem 2rem;
+    border-radius: 16px;
+    text-align: center;
+    color: white;
+    margin-bottom: 2rem;
+}
+.main-header h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+.main-header h3 {
+    font-weight: 400;
+    opacity: 0.95;
+}
+.feature-box, .course-highlight, .achievement-card, .simple-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 14px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+}
+.feature-box:hover,
+.course-highlight:hover,
+.achievement-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+.feature-icon, .achievement-icon {
+    font-size: 2rem;
+    margin-bottom: 0.6rem;
+}
+.stat-box {
+    text-align: center;
+    padding: 1.2rem;
+}
+.stat-box h2 {
+    color: #667eea;
+    font-size: 2.2rem;
+    margin-bottom: 0.3rem;
+}
+.process-step {
+    background: #f8f9ff;
+    padding: 1.2rem;
+    border-left: 5px solid #667eea;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+.step-number {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #667eea;
+}
+.cta-section {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    padding: 3rem 2rem;
+    border-radius: 18px;
+    text-align: center;
+    margin-top: 2rem;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# Custom CSS for clean design
 st.markdown("""
     <style>
     /* Mobile responsiveness */
@@ -30,29 +97,72 @@ st.markdown("""
             width: 100%;
         }
         .stTextInput > div > div > input {
-            font-size: 16px !important; /* Prevents zoom on iOS */
+            font-size: 16px !important;
         }
     }
 
-    /* General styles */
-    .header {
+    /* Header */
+    .main-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 2rem;
-        border-radius: 10px;
-        color: white;
+        padding: 3rem 2rem;
+        border-radius: 15px;
+        color: black;
         margin-bottom: 2rem;
+        text-align: center;
     }
-    .course-card {
-        border: 1px solid #e0e0e0;
+
+    .main-header h1 {
+        font-size: 2.8rem;
+        margin-bottom: 1rem;
+    }
+
+    .main-header h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.9;
+    }
+
+    /* Feature Box */
+    .feature-box {
+        background: white;
         border-radius: 10px;
         padding: 1.5rem;
         margin: 1rem 0;
-        transition: transform 0.3s;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        border: 1px solid #eaeaea;
+        text-align: center;
+        color: black;
     }
-    .course-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: black;
     }
+
+    /* Stat Box */
+    .stat-box {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1px;
+        margin: 0.5rem;
+        text-align: center;
+        border: 1px solid #eaeaea;
+        color:black;
+    }
+
+    /* Course Highlight */
+    .course-highlight {
+        background: white;
+        border-radius: 10px;
+        padding: 2rem;
+        margin: 1rem 0;
+        border-left: 4px solid #667eea;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        color: black;
+    }
+
+    /* Success Message */
     .success-message {
         background-color: #d4edda;
         color: #155724;
@@ -60,21 +170,75 @@ st.markdown("""
         border-radius: 5px;
         border: 1px solid #c3e6cb;
         margin: 1rem 0;
+        color:black;
     }
-    .admin-card {
+
+    /* Process Step */
+    .process-step {
         background: #f8f9fa;
-        border-left: 4px solid #007bff;
-        padding: 1rem;
-        border-radius: 5px;
-        margin: 0.5rem 0;
-    }
-    .warning-box {
-        background-color: #fff3cd;
-        border: 1px solid #ffeaa7;
-        color: #856404;
-        padding: 1rem;
-        border-radius: 5px;
+        border-radius: 10px;
+        padding: 1.5rem;
         margin: 1rem 0;
+        position: relative;
+        color:black;
+    }
+
+    .step-number {
+        display: inline-block;
+        background: #667eea;
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 30px;
+        margin-right: 10px;
+        font-weight: bold;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        padding: 2.5rem;
+        border-radius: 15px;
+        color: white;
+        text-align: center;
+        margin: 2rem 0;
+    }
+
+    /* Achievement Card */
+    .achievement-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1rem;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        border-top: 3px solid #667eea;
+    }
+
+    .achievement-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #667eea;
+    }
+
+    /* Contact Info */
+    .contact-info {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+    }
+
+    /* Simple Card */
+    .simple-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        border: 1px solid #eaeaea;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -84,6 +248,10 @@ if 'admin_logged_in' not in st.session_state:
     st.session_state.admin_logged_in = False
 if 'admin_password_attempts' not in st.session_state:
     st.session_state.admin_password_attempts = 0
+if 'page' not in st.session_state:
+    st.session_state.page = "Home"
+if 'course_selected' not in st.session_state:
+    st.session_state.course_selected = ""
 
 
 # Database setup
@@ -173,7 +341,24 @@ def navigation():
         # Add Admin Login option
         menu.append("🔐 Admin Login")
 
-    choice = st.sidebar.radio("Navigate", menu)
+    # Create radio buttons for navigation
+    choice = st.sidebar.radio("Navigate", menu, key="nav_choice")
+
+    # Update session state based on selection
+    if choice == "🏠 Home":
+        st.session_state.page = "Home"
+    elif choice == "📚 Courses":
+        st.session_state.page = "Courses"
+    elif choice == "🎯 Admission":
+        st.session_state.page = "Admission"
+    elif choice == "👥 About Us":
+        st.session_state.page = "About Us"
+    elif choice == "📞 Contact Us":
+        st.session_state.page = "Contact Us"
+    elif choice == "🔐 Admin Login":
+        st.session_state.page = "Admin Login"
+    elif choice == "🔐 Admin Dashboard":
+        st.session_state.page = "Admin Dashboard"
 
     # Admin logout button (only when logged in)
     if st.session_state.admin_logged_in:
@@ -181,9 +366,163 @@ def navigation():
         if st.sidebar.button("🚪 Logout Admin", type="secondary"):
             st.session_state.admin_logged_in = False
             st.session_state.admin_password_attempts = 0
+            st.session_state.page = "Home"
             st.rerun()
 
-    return choice
+    return st.session_state.page
+
+
+# Function to handle button clicks for page navigation
+def go_to_page(page_name):
+    st.session_state.page = page_name
+    st.rerun()
+
+
+
+if "page" not in st.session_state:
+    st.session_state.page = "Home"
+
+page = st.session_state.page
+# Simple Home Page
+def home_page():
+    # Hero Section
+    st.markdown("""
+    <div class="main-header">
+        <h1> EnLift-Institute</h1>
+        <h3>Computer Science Made Clear, Practical & Exam-Ready</h3>
+        <p style="max-width: 820px; margin: 1rem auto; font-size: 1.15rem;">
+            Structured online Computer Science education for ICSE, CBSE, WBCSE and college students.
+            We focus on <strong>concept clarity, coding confidence, and real understanding</strong>.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    if st.session_state.page == "Courses":
+        courses_page()
+
+    # CTA Buttons
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        if st.button("📚 View Courses", type="primary", use_container_width=True):
+            st.session_state.page = "Courses"
+
+    with col2:
+        if st.button("🎯 Admission Process", use_container_width=True):
+            st.session_state.page = "Admission"
+
+    with col3:
+        if st.button("📞 Contact Institute", use_container_width=True):
+            st.session_state.page = "Contact Us"
+
+    st.markdown("---")
+
+    # Trust Stats
+    stat_cols = st.columns(3)
+    stats = [("5+", "Years Teaching"), ("1000+", "Classes Taken"), ("100%", "Syllabus Coverage")]
+    for col, (num, text) in zip(stat_cols, stats):
+        with col:
+            st.markdown(f"""
+            <div class="stat-box">
+                <h2>{num}</h2>
+                <p>{text}</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # Why Choose Us
+    st.subheader("✨ Why Students Choose EnLift")
+    features = [
+        ("👨‍🏫", "Experienced Faculty", "Taught by a software engineer with deep academic clarity"),
+        ("🧠", "Concept-First Teaching", "We explain *why*, not just *what*"),
+        ("💻", "Live Coding Classes", "Students code along during class"),
+        ("📝", "Assignments & Tests", "Weekly assignments and monthly tests"),
+        ("📊", "Progress Tracking", "Personal feedback & improvement reports"),
+        ("🎯", "Board-Focused", "Strictly aligned with ICSE, CBSE & WBCSE")
+    ]
+
+    cols = st.columns(3)
+    for i, f in enumerate(features):
+        with cols[i % 3]:
+            st.markdown(f"""
+            <div class="feature-box">
+                <div class="feature-icon">{f[0]}</div>
+                <h4>{f[1]}</h4>
+                <p>{f[2]}</p>
+            </div>
+            
+            """, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # Programs
+    st.subheader("🎓 Programs Offered")
+    pcols = st.columns(2)
+
+    with pcols[0]:
+        st.markdown("""
+        <div class="course-highlight">
+            <h4>🏫 School Programs (Class VIII – XII)</h4>
+            <p>ICSE • CBSE • WBCSE</p>
+            <ul>
+                <li>Computer Science / Computer Applications</li>
+                <li>Complete board syllabus coverage</li>
+                <li>Monthly exams + assignments</li>
+                <li>Strong programming foundation</li>
+            </ul>
+            <strong>Fees: ₹1,000 – ₹1,200 / month</strong>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with pcols[1]:
+        st.markdown("""
+        <div class="course-highlight">
+            <h4>🎓 College Programs (B.Tech CSE / BCA)</h4>
+            <ul>
+                <li>Programming & DSA clarity</li>
+                <li>DBMS, OS, CN explained practically</li>
+                <li>Project & interview guidance</li>
+            </ul>
+            <strong>Fees: ₹1,200 / month</strong>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # Learning Flow
+    st.subheader("📈 How Learning Happens")
+    steps = [
+        ("1", "Assessment", "Understand student level & goals"),
+        ("2", "Live Classes", "Interactive explanation + coding"),
+        ("3", "Assignments", "Weekly problem solving"),
+        ("4", "Monthly Tests", "Board-pattern evaluation"),
+        ("5", "Confidence", "Exam-ready + coding clarity")
+    ]
+
+    for s in steps:
+        st.markdown(f"""
+        <div class="process-step">
+            <span class="step-number">{s[0]}</span> <strong>{s[1]}</strong>
+            <p>{s[2]}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # Final CTA
+    st.markdown("""
+    <div class="cta-section">
+        <h3>Start Learning the Right Way</h3>
+        <p>Admissions open • Limited seats • Personal attention guaranteed</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    c1, c2 = st.columns(2)
+    with c1:
+        st.button("🎯 Apply for Admission", type="primary", use_container_width=True)
+
+    with c2:
+        st.button("📚 Explore Courses", use_container_width=True)
+
 
 
 # Admin Login Page
@@ -195,9 +534,7 @@ def admin_login_page():
         st.info("Navigate to '🔐 Admin Dashboard' from the sidebar to access admin features.")
         return
 
-    st.markdown('<div class="warning-box">', unsafe_allow_html=True)
     st.warning("⚠️ Admin access is restricted to authorized personnel only.")
-    st.markdown('</div>', unsafe_allow_html=True)
 
     with st.form("admin_login_form"):
         admin_username = st.text_input("Username")
@@ -206,14 +543,14 @@ def admin_login_page():
         submitted = st.form_submit_button("Login", type="primary")
 
         if submitted:
-            # Simple admin authentication (In production, use secure password hashing)
-            correct_username = "arunava"  # Should be in secrets in production
-            correct_password = "123Arunava."  # Should be in secrets in production
+            correct_username = "arunava"
+            correct_password = "123Arunava."
 
             if admin_username == correct_username and admin_password == correct_password:
                 st.session_state.admin_logged_in = True
                 st.session_state.admin_password_attempts = 0
-                st.success("✅ Login successful! Redirecting...")
+                st.success("✅ Login successful! Redirecting to dashboard...")
+                st.session_state.page = "Admin Dashboard"
                 st.rerun()
             else:
                 st.session_state.admin_password_attempts += 1
@@ -303,23 +640,23 @@ def admin_dashboard_page():
             # Filters
             st.subheader("🔍 Filter Registrations")
 
-            filter_col1, filter_col2, filter_col3 = st.columns(3)
+            filter_cols = st.columns(3)
 
-            with filter_col1:
+            with filter_cols[0]:
                 course_filter = st.multiselect(
                     "Filter by Course",
                     options=sorted(df['course'].unique()),
                     default=[]
                 )
 
-            with filter_col2:
+            with filter_cols[1]:
                 status_filter = st.multiselect(
                     "Filter by Status",
                     options=sorted(df['status'].unique()),
                     default=[]
                 )
 
-            with filter_col3:
+            with filter_cols[2]:
                 date_filter = st.date_input(
                     "Filter by Registration Date",
                     value=None
@@ -415,53 +752,7 @@ def admin_dashboard_page():
         conn.close()
 
 
-# Home Page (unchanged)
-def home_page():
-    st.markdown('<div class="header">', unsafe_allow_html=True)
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        st.title("EnLift-Institute")
-        st.markdown("### Elevate Your Computer Science Journey")
-        st.markdown("""
-        Expert online coaching for:
-        - School Students (8-12) - ICSE, CBSE, WBCSE
-        - College Students (B.Tech/BCA 1st-3rd Year)
-        """)
-        st.button("🚀 Start Learning", type="primary")
-    with col2:
-        st.image("https://cdn.pixabay.com/photo/2017/10/10/21/47/laptop-2838921_1280.jpg",
-                 caption="Learn Anytime, Anywhere")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    # Features
-    st.subheader("🌟 Why Choose EnLift-Institute?")
-    cols = st.columns(4)
-    features = [
-        ("👨‍🏫", "Expert Faculty", "Industry professionals"),
-        ("📱", "Live Interactive Classes", "Real-time doubt solving and mentoring"),
-        ("📚", "Structured Curriculum", "Board-specific & university-aligned content"),
-        ("🎓", "Placement Assistance", "Career guidance and interview preparation")
-    ]
-
-    for idx, (icon, title, desc) in enumerate(features):
-        with cols[idx]:
-            st.markdown(f"### {icon}")
-            st.markdown(f"**{title}**")
-            st.markdown(f"<small>{desc}</small>", unsafe_allow_html=True)
-
-    # Stats
-    st.markdown("---")
-    st.subheader("📊 Our Impact")
-    stat_cols = st.columns(4)
-    stats = [("500+", "Students Trained"), ("98%", "Pass Rate"), ("Online", "1:1 Guidence"), ("New-Age", "Curriculum")]
-
-    for idx, (number, label) in enumerate(stats):
-        with stat_cols[idx]:
-            st.markdown(f"## {number}")
-            st.markdown(f"**{label}**")
-
-
-# Courses Page (unchanged)
+# Courses Page
 def courses_page():
     st.title("📚 Our Courses")
     st.markdown(
@@ -549,7 +840,7 @@ def courses_page():
                         st.markdown(f"### {fee}")
                         if st.button("Enroll Now", key=f"{board}_{course_name}"):
                             st.session_state.course_selected = f"{board} - {course_name}"
-                            st.switch_page("🎯 Admission")
+                            go_to_page("Admission")
                     st.markdown("---")
 
     # College Courses
@@ -613,13 +904,20 @@ def courses_page():
                         st.markdown(f"### {fee}")
                         if st.button("Enroll Now", key=f"{program}_{year}"):
                             st.session_state.course_selected = f"{program} - {year}"
-                            st.switch_page("🎯 Admission")
+                            go_to_page("Admission")
                     st.markdown("---")
 
 
-# Admission Page (removed admin stats)
+# Admission Page
 def admission_page():
     st.title("🎯 Student Admission")
+
+    # Show pre-selected course if any
+    if st.session_state.course_selected:
+        st.info(f"📝 You're enrolling for: **{st.session_state.course_selected}**")
+        if st.button("Clear selection"):
+            st.session_state.course_selected = ""
+            st.rerun()
 
     # Initialize database connection
     conn = init_database()
@@ -653,7 +951,15 @@ def admission_page():
                 "BCA - 3rd Year"
             ]
 
-            course = st.selectbox("Select Course*", course_options)
+            # Pre-select course if it was chosen from courses page
+            default_index = 0
+            if st.session_state.course_selected:
+                for idx, option in enumerate(course_options):
+                    if st.session_state.course_selected in option:
+                        default_index = idx
+                        break
+
+            course = st.selectbox("Select Course*", course_options, index=default_index)
 
             # Board/Program selection
             education_type = st.radio("Education Level*",
@@ -677,7 +983,7 @@ def admission_page():
 
         if submitted:
             # Validation
-            if not all([name, email, phone, course != "Select Course", agree]):
+            if not all([name,email, phone, course != "Select Course", agree]):
                 st.error("Please fill all mandatory fields (*)")
             elif not re.match(r"[^@]+@[^@]+\.[^@]+", email):
                 st.error("Please enter a valid email address")
@@ -734,7 +1040,8 @@ def admission_page():
                             4. **Access learning portal** (credentials will be provided)
                             """)
 
-                    # Reset form
+                    # Reset form and course selection
+                    st.session_state.course_selected = ""
                     st.rerun()
 
                 except sqlite3.IntegrityError:
@@ -745,7 +1052,7 @@ def admission_page():
     conn.close()
 
 
-# About Us Page (unchanged)
+# About Us Page
 def about_us_page():
     st.title("👥 About EnLift-Institute")
 
@@ -783,7 +1090,7 @@ def about_us_page():
             st.markdown("")
 
 
-# Contact Us Page (unchanged)
+# Contact Us Page
 def contact_us_page():
     st.title("📞 Contact Us")
 
@@ -862,22 +1169,22 @@ def main():
     Path("contacts").mkdir(exist_ok=True)
 
     # Sidebar navigation
-    choice = navigation()
+    current_page = navigation()
 
     # Display selected page
-    if choice == "🏠 Home":
+    if current_page == "Home":
         home_page()
-    elif choice == "📚 Courses":
+    elif current_page == "Courses":
         courses_page()
-    elif choice == "🎯 Admission":
+    elif current_page == "Admission":
         admission_page()
-    elif choice == "👥 About Us":
+    elif current_page == "About Us":
         about_us_page()
-    elif choice == "📞 Contact Us":
+    elif current_page == "Contact Us":
         contact_us_page()
-    elif choice == "🔐 Admin Login":
+    elif current_page == "Admin Login":
         admin_login_page()
-    elif choice == "🔐 Admin Dashboard":
+    elif current_page == "Admin Dashboard":
         admin_dashboard_page()
 
     # Footer
@@ -888,26 +1195,29 @@ def main():
         st.markdown("### EnLift-Institute")
         st.markdown("""
         Transforming computer science education through 
-        innovative online coaching since 2015.
+        innovative online coaching since 2022.
         """)
 
     with footer_cols[1]:
         st.markdown("**Quick Links**")
-        st.markdown("[Home](#)")
-        st.markdown("[Courses](#)")
-        st.markdown("[Admissions](#)")
+        if st.button("Home", key="footer_home"):
+            go_to_page("Home")
+        if st.button("Courses", key="footer_courses"):
+            go_to_page("Courses")
+        if st.button("Admissions", key="footer_admissions"):
+            go_to_page("Admission")
 
     with footer_cols[2]:
         st.markdown("**Resources**")
-        st.markdown("[Study Materials](#)")
-        st.markdown("[Placement Portal](#)")
-        st.markdown("[FAQ](#)")
+        st.markdown("Study Materials")
+        st.markdown("Placement Portal")
+        st.markdown("FAQ")
 
     with footer_cols[3]:
         st.markdown("**Legal**")
-        st.markdown("[Privacy Policy](#)")
-        st.markdown("[Terms of Service](#)")
-        st.markdown("[Refund Policy](#)")
+        st.markdown("Privacy Policy")
+        st.markdown("Terms of Service")
+        st.markdown("Refund Policy")
 
     st.markdown("---")
     st.markdown("© 2024 EnLift-Institute. All rights reserved.")
