@@ -61,8 +61,29 @@ st.markdown("""
         border: 1px solid #c3e6cb;
         margin: 1rem 0;
     }
+    .admin-card {
+        background: #f8f9fa;
+        border-left: 4px solid #007bff;
+        padding: 1rem;
+        border-radius: 5px;
+        margin: 0.5rem 0;
+    }
+    .warning-box {
+        background-color: #fff3cd;
+        border: 1px solid #ffeaa7;
+        color: #856404;
+        padding: 1rem;
+        border-radius: 5px;
+        margin: 1rem 0;
+    }
     </style>
 """, unsafe_allow_html=True)
+
+# Initialize session state for admin login
+if 'admin_logged_in' not in st.session_state:
+    st.session_state.admin_logged_in = False
+if 'admin_password_attempts' not in st.session_state:
+    st.session_state.admin_password_attempts = 0
 
 
 # Database setup
@@ -87,25 +108,21 @@ def init_database():
     return conn
 
 
-# Email configuration (using Streamlit secrets for security)
+# Email configuration
 def send_welcome_email(student_email, student_name, course):
     try:
-        # In production, use st.secrets for email credentials
-        # For demo, we'll simulate email sending
         email_config = {
             'smtp_server': 'smtp.gmail.com',
             'smtp_port': 587,
-            'sender_email': 'admissions@enlift-institute.com',  # Configure in Streamlit secrets
-            'sender_password': ''  # Configure in Streamlit secrets
+            'sender_email': 'admissions@enlift-institute.com',
+            'sender_password': ''
         }
 
-        # Create message
         msg = MIMEMultipart()
         msg['From'] = email_config['sender_email']
         msg['To'] = student_email
         msg['Subject'] = 'Welcome to EnLift-Institute!'
 
-        # Email body
         body = f"""
         Dear {student_name},
 
@@ -130,20 +147,13 @@ def send_welcome_email(student_email, student_name, course):
 
         msg.attach(MIMEText(body, 'plain'))
 
-        # Send email (commented for demo, uncomment with proper credentials)
-        # server = smtplib.SMTP(email_config['smtp_server'], email_config['smtp_port'])
-        # server.starttls()
-        # server.login(email_config['sender_email'], email_config['sender_password'])
-        # server.send_message(msg)
-        # server.quit()
-
         # For demo, save email content to file
+        Path("emails").mkdir(exist_ok=True)
         with open(f'emails/{student_email}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.txt', 'w') as f:
             f.write(f"To: {student_email}\nSubject: {msg['Subject']}\n\n{body}")
 
         return True
     except Exception as e:
-        st.error(f"Email configuration needed. Error: {str(e)}")
         # For demo purposes, we'll return True
         return True
 
@@ -152,12 +162,260 @@ def send_welcome_email(student_email, student_name, course):
 def navigation():
     st.sidebar.title("🚀 EnLift-Institute")
     st.sidebar.markdown("---")
+
+    # Main navigation menu
     menu = ["🏠 Home", "📚 Courses", "🎯 Admission", "👥 About Us", "📞 Contact Us"]
+
+    # Add Admin page to menu if logged in
+    if st.session_state.admin_logged_in:
+        menu.append("🔐 Admin Dashboard")
+    else:
+        # Add Admin Login option
+        menu.append("🔐 Admin Login")
+
     choice = st.sidebar.radio("Navigate", menu)
+
+    # Admin logout button (only when logged in)
+    if st.session_state.admin_logged_in:
+        st.sidebar.markdown("---")
+        if st.sidebar.button("🚪 Logout Admin", type="secondary"):
+            st.session_state.admin_logged_in = False
+            st.session_state.admin_password_attempts = 0
+            st.rerun()
+
     return choice
 
 
-# Home Page
+# Admin Login Page
+def admin_login_page():
+    st.title("🔐 Admin Login")
+
+    if st.session_state.admin_logged_in:
+        st.success("✅ You are already logged in!")
+        st.info("Navigate to '🔐 Admin Dashboard' from the sidebar to access admin features.")
+        return
+
+    st.markdown('<div class="warning-box">', unsafe_allow_html=True)
+    st.warning("⚠️ Admin access is restricted to authorized personnel only.")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    with st.form("admin_login_form"):
+        admin_username = st.text_input("Username")
+        admin_password = st.text_input("Password", type="password")
+
+        submitted = st.form_submit_button("Login", type="primary")
+
+        if submitted:
+            # Simple admin authentication (In production, use secure password hashing)
+            correct_username = "arunava"  # Should be in secrets in production
+            correct_password = "123Arunava."  # Should be in secrets in production
+
+            if admin_username == correct_username and admin_password == correct_password:
+                st.session_state.admin_logged_in = True
+                st.session_state.admin_password_attempts = 0
+                st.success("✅ Login successful! Redirecting...")
+                st.rerun()
+            else:
+                st.session_state.admin_password_attempts += 1
+                attempts_left = 3 - st.session_state.admin_password_attempts
+
+                if attempts_left > 0:
+                    st.error(f"❌ Incorrect username or password. {attempts_left} attempts left.")
+                else:
+                    st.error("❌ Too many failed attempts. Please try again later.")
+                    st.session_state.admin_password_attempts = 0
+
+
+# Admin Dashboard Page
+def admin_dashboard_page():
+    if not st.session_state.admin_logged_in:
+        st.error("🔒 Access Denied. Please login as admin.")
+        return
+
+    st.title("🔐 Admin Dashboard")
+
+    # Initialize database connection
+    conn = init_database()
+
+    # Admin actions
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        if st.button("🔄 Refresh Data", use_container_width=True):
+            st.rerun()
+
+    with col2:
+        if st.button("📥 Export to CSV", use_container_width=True):
+            try:
+                df = pd.read_sql_query("SELECT * FROM students", conn)
+                csv = df.to_csv(index=False)
+                st.download_button(
+                    label="Download CSV",
+                    data=csv,
+                    file_name=f"enlift_students_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                    mime="text/csv",
+                    use_container_width=True
+                )
+            except Exception as e:
+                st.error(f"Error exporting data: {e}")
+
+    with col3:
+        if st.button("🗑️ Clear Old Data", use_container_width=True):
+            with st.expander("⚠️ Confirm Deletion"):
+                st.warning("This will delete all student records. This action cannot be undone!")
+                confirm = st.text_input("Type 'DELETE' to confirm:")
+                if confirm == "DELETE":
+                    try:
+                        cursor = conn.cursor()
+                        cursor.execute("DELETE FROM students")
+                        conn.commit()
+                        st.success("✅ All student records have been deleted.")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Error clearing data: {e}")
+
+    st.markdown("---")
+
+    # Load and display student data
+    try:
+        df = pd.read_sql_query("SELECT * FROM students ORDER BY registration_date DESC", conn)
+
+        if len(df) == 0:
+            st.info("📭 No student registrations found.")
+        else:
+            # Statistics
+            st.subheader("📊 Registration Statistics")
+
+            stat_cols = st.columns(4)
+            with stat_cols[0]:
+                st.metric("Total Students", len(df))
+            with stat_cols[1]:
+                today_count = len(df[pd.to_datetime(df['registration_date']).dt.date == datetime.now().date()])
+                st.metric("Today's Registrations", today_count)
+            with stat_cols[2]:
+                st.metric("Active Courses", df['course'].nunique())
+            with stat_cols[3]:
+                pending_count = len(df[df['status'] == 'pending'])
+                st.metric("Pending Approvals", pending_count)
+
+            st.markdown("---")
+
+            # Filters
+            st.subheader("🔍 Filter Registrations")
+
+            filter_col1, filter_col2, filter_col3 = st.columns(3)
+
+            with filter_col1:
+                course_filter = st.multiselect(
+                    "Filter by Course",
+                    options=sorted(df['course'].unique()),
+                    default=[]
+                )
+
+            with filter_col2:
+                status_filter = st.multiselect(
+                    "Filter by Status",
+                    options=sorted(df['status'].unique()),
+                    default=[]
+                )
+
+            with filter_col3:
+                date_filter = st.date_input(
+                    "Filter by Registration Date",
+                    value=None
+                )
+
+            # Apply filters
+            filtered_df = df.copy()
+
+            if course_filter:
+                filtered_df = filtered_df[filtered_df['course'].isin(course_filter)]
+
+            if status_filter:
+                filtered_df = filtered_df[filtered_df['status'].isin(status_filter)]
+
+            if date_filter:
+                filtered_df = filtered_df[pd.to_datetime(filtered_df['registration_date']).dt.date == date_filter]
+
+            # Display filtered data
+            st.subheader(f"📋 Student Registrations ({len(filtered_df)} records)")
+
+            # Editable dataframe for status updates
+            edited_df = st.data_editor(
+                filtered_df,
+                column_config={
+                    "id": st.column_config.NumberColumn("ID", disabled=True),
+                    "name": st.column_config.TextColumn("Name", disabled=True),
+                    "email": st.column_config.TextColumn("Email", disabled=True),
+                    "phone": st.column_config.TextColumn("Phone"),
+                    "course": st.column_config.TextColumn("Course", disabled=True),
+                    "board": st.column_config.TextColumn("Board/Program"),
+                    "year": st.column_config.NumberColumn("Year/Grade"),
+                    "age": st.column_config.NumberColumn("Age"),
+                    "registration_date": st.column_config.DatetimeColumn("Registration Date", disabled=True),
+                    "status": st.column_config.SelectboxColumn(
+                        "Status",
+                        options=["pending", "approved", "rejected", "completed"],
+                        required=True
+                    )
+                },
+                use_container_width=True,
+                height=400
+            )
+
+            # Save changes button
+            if st.button("💾 Save Changes", type="primary"):
+                try:
+                    # Update database with changes
+                    for index, row in edited_df.iterrows():
+                        cursor = conn.cursor()
+                        cursor.execute('''
+                            UPDATE students 
+                            SET phone=?, board=?, year=?, age=?, status=?
+                            WHERE id=?
+                        ''', (row['phone'], row['board'], row['year'], row['age'], row['status'], row['id']))
+                    conn.commit()
+                    st.success("✅ Changes saved successfully!")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Error saving changes: {e}")
+
+            # Detailed view expander
+            with st.expander("📊 Detailed Analytics"):
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    st.markdown("**Course Distribution**")
+                    course_counts = df['course'].value_counts()
+                    st.bar_chart(course_counts)
+
+                with col2:
+                    st.markdown("**Status Distribution**")
+                    status_counts = df['status'].value_counts()
+                    st.bar_chart(status_counts)
+
+                col3, col4 = st.columns(2)
+
+                with col3:
+                    st.markdown("**Registration Trend (Last 7 Days)**")
+                    df['reg_date'] = pd.to_datetime(df['registration_date']).dt.date
+                    last_7_days = df[df['reg_date'] >= (datetime.now().date() - pd.Timedelta(days=7))]
+                    daily_counts = last_7_days.groupby('reg_date').size()
+                    st.line_chart(daily_counts)
+
+                with col4:
+                    st.markdown("**Age Distribution**")
+                    age_counts = df['age'].value_counts().sort_index()
+                    st.bar_chart(age_counts)
+
+    except Exception as e:
+        st.error(f"Error loading data: {e}")
+
+    finally:
+        conn.close()
+
+
+# Home Page (unchanged)
 def home_page():
     st.markdown('<div class="header">', unsafe_allow_html=True)
     col1, col2 = st.columns([2, 1])
@@ -195,7 +453,7 @@ def home_page():
     st.markdown("---")
     st.subheader("📊 Our Impact")
     stat_cols = st.columns(4)
-    stats = [("500+", "Students Trained"), ("98%", "Pass Rate"), ("Online" , "1:1 Guidence"),("New-Age" , "Curriculum")]
+    stats = [("500+", "Students Trained"), ("98%", "Pass Rate"), ("Online", "1:1 Guidence"), ("New-Age", "Curriculum")]
 
     for idx, (number, label) in enumerate(stats):
         with stat_cols[idx]:
@@ -203,7 +461,7 @@ def home_page():
             st.markdown(f"**{label}**")
 
 
-# Courses Page
+# Courses Page (unchanged)
 def courses_page():
     st.title("📚 Our Courses")
     st.markdown(
@@ -359,9 +617,7 @@ def courses_page():
                     st.markdown("---")
 
 
-
-
-# Admission Page
+# Admission Page (removed admin stats)
 def admission_page():
     st.title("🎯 Student Admission")
 
@@ -453,6 +709,7 @@ def admission_page():
                     Path("emails").mkdir(exist_ok=True)
 
                     # Save to JSON file
+                    Path("students").mkdir(exist_ok=True)
                     with open(f"students/{email.replace('@', '_')}.json", "w") as f:
                         json.dump(student_data, f, indent=2)
 
@@ -487,27 +744,8 @@ def admission_page():
 
     conn.close()
 
-    # Display registration stats (admin view)
-    if st.checkbox("Show Registration Stats (Admin)"):
-        try:
-            conn = init_database()
-            df = pd.read_sql_query("SELECT * FROM students", conn)
-            st.dataframe(df)
 
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                st.metric("Total Students", len(df))
-            with col2:
-                st.metric("Today's Registrations",
-                          len(df[pd.to_datetime(df['registration_date']).dt.date == datetime.now().date()]))
-            with col3:
-                st.metric("Active Courses", df['course'].nunique())
-            conn.close()
-        except:
-            pass
-
-
-# About Us Page
+# About Us Page (unchanged)
 def about_us_page():
     st.title("👥 About EnLift-Institute")
 
@@ -545,9 +783,7 @@ def about_us_page():
             st.markdown("")
 
 
-
-
-# Contact Us Page
+# Contact Us Page (unchanged)
 def contact_us_page():
     st.title("📞 Contact Us")
 
@@ -618,10 +854,6 @@ def contact_us_page():
                     st.success("✅ Message sent successfully! We'll respond within 24 hours.")
 
 
-
-
-
-
 # Main App
 def main():
     # Create necessary directories
@@ -643,6 +875,10 @@ def main():
         about_us_page()
     elif choice == "📞 Contact Us":
         contact_us_page()
+    elif choice == "🔐 Admin Login":
+        admin_login_page()
+    elif choice == "🔐 Admin Dashboard":
+        admin_dashboard_page()
 
     # Footer
     st.markdown("---")
